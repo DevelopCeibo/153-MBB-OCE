@@ -40,8 +40,8 @@ public class RouterHandler implements RequestHandler<APIGatewayProxyRequestEvent
 
             // Devolver una respuesta de éxito
             return new APIGatewayProxyResponseEvent()
-                    .withStatusCode(200)
-                    .withBody("Message sent to SQS successfully");
+                    .withStatusCode(204)
+                    .withHeaders(Map.of("Content-Type", "application/json"));
 
         } catch (Exception e) {
             e.printStackTrace();

@@ -3,47 +3,52 @@ package com.telecom.handler;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
-import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
-import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
+import com.amazonaws.services.lambda.runtime.events.SQSEvent;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.telecom.models.NotificationEntity;
 import com.telecom.services.NotificationEntityService;
 
 import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 
-public class NotificationEntityHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
+public class NotificationEntityHandler implements RequestHandler<SQSEvent, Void> {
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
-    public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent apiGatewayProxyRequestEvent, Context context) {
+    public Void handleRequest(SQSEvent sqsEvent, Context context) {
 
         LambdaLogger logger = context.getLogger();
 
         NotificationEntityService notificationEntityService = new NotificationEntityService(logger);
 
-        Map<String, String> queryStrings = apiGatewayProxyRequestEvent.getQueryStringParameters();
-        String bodyString = apiGatewayProxyRequestEvent.getBody();
-        Map<String, Object> body = notificationEntityService.convertJsonStringToMap(bodyString);
+        // Recorrer los mensajes recibidos en el evento de SQS
+        for (SQSEvent.SQSMessage message : sqsEvent.getRecords()) {
+            try {
+                // El cuerpo del mensaje de SQS está en formato JSON, que incluye los queryStrings y el body.
+                String messageBody = message.getBody();
 
+                // Deserializar el mensaje para obtener los queryStrings y el body
+                Map<String, Object> messageMap = objectMapper.readValue(messageBody, Map.class);
+                Map<String, String> queryStrings = (Map<String, String>) messageMap.get("requestQueryStrings");
+                Map<String, Object> body = (Map<String, Object>) messageMap.get("requestBody");
 
-        NotificationEntity notificationEntity = new NotificationEntity(Map.of(
-                "queryStrings", queryStrings,
-                "body", body
-        ));
+                // Crear la entidad NotificationEntity con los datos extraídos
+                NotificationEntity notificationEntity = new NotificationEntity(Map.of(
+                        "queryStrings", queryStrings,
+                        "body", body
+                ));
 
-        logger.log("notificationEntity: " + notificationEntity);
+                logger.log("notificationEntity: " + notificationEntity);
 
-        try {
-            notificationEntityService.processEloquaRequest(notificationEntity);
-        } catch (Exception e) {
-            context.getLogger().log("Error en el procesamiento: " + e.getMessage());
-            return new APIGatewayProxyResponseEvent()
-                    .withStatusCode(500)
-                    .withBody("Error al procesar la solicitud.");
+                // Procesar la solicitud utilizando NotificationEntityService
+                notificationEntityService.processEloquaRequest(notificationEntity);
+
+            } catch (Exception e) {
+                logger.log("Error procesando el mensaje de SQS: " + e.getMessage());
+            }
         }
 
-        return new APIGatewayProxyResponseEvent()
-                .withStatusCode(204)
-                .withHeaders(Map.of("Content-Type", "application/json"));
+        // No necesitamos devolver una respuesta, ya que el evento de SQS no requiere un APIGatewayProxyResponseEvent
+        return null;
     }
 }

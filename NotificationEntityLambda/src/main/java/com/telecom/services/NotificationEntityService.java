@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.telecom.models.NotificationEntity;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -190,17 +189,6 @@ public class NotificationEntityService {
             System.out.println("Sincronización Response: " + response);
         } catch (Exception e) {
             System.err.println("Error en la sincronización: " + e.getMessage());
-        }
-    }
-
-    public Map<String, Object> convertJsonStringToMap(String jsonString) {
-        try {
-            // Convertir el JSON a JsonNode
-            JsonNode jsonNode = objectMapper.readTree(jsonString);
-            // Convertir el JsonNode a Map
-            return objectMapper.convertValue(jsonNode, Map.class);
-        } catch (IOException e) {
-            throw new RuntimeException("Error al convertir el JSON a Map", e);
         }
     }
 
