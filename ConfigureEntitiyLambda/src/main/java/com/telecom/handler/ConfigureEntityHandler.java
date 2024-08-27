@@ -62,8 +62,11 @@ public class ConfigureEntityHandler implements RequestHandler<APIGatewayProxyReq
         try{
             body = objectMapper.readValue(bodyString, Map.class);
             eloquaAppItem.setCustomObjectId((String) body.get("customObjectId"));
-            eloquaAppItem.setCustomObjectFieldsList( (List<CustomObjectFields>) body.get("customObjectFields"));
+            String customObjectFieldsStrings =  (String) body.get("customObjectFields");
+            List<CustomObjectFields> customObjectFields = objectMapper.readValue(customObjectFieldsStrings, List.class);
+            eloquaAppItem.setCustomObjectFieldsList( customObjectFields);  //customObjectFields
             eloquaAppItem.setTemplate((String) body.get("template"));
+            eloquaAppItem.setInvoicesBaseUrl((String) body.get("invoicesBaseUrl"));
             eloquaAppItem.setState("updated");
 
             eloquaAppService.updateItem(eloquaAppItem);

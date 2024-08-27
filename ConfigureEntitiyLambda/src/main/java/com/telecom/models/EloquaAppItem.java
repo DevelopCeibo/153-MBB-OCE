@@ -29,6 +29,7 @@ public class EloquaAppItem {
     private String customObjectId;
     private List<CustomObjectFields> customObjectFieldsList;
     private String template;
+    private String invoicesBaseUrl;
 
     // Constructores
 
@@ -52,6 +53,7 @@ public class EloquaAppItem {
         this.customObjectId = (String) queryParams.getOrDefault("customObjectId", "186");
         this.customObjectFieldsList = (List<CustomObjectFields>) queryParams.getOrDefault("customObjectFields", new ArrayList<CustomObjectFields>());
         this.template = (String) queryParams.getOrDefault("template", "");
+        this.invoicesBaseUrl = (String) queryParams.getOrDefault("invoicesBaseUrl", "");
     }
 
     public EloquaAppItem(Map<String, String> queryParams, Map<String, Object> body) {
@@ -73,6 +75,7 @@ public class EloquaAppItem {
         this.customObjectId = (String) body.getOrDefault("customObjectId", "186");
         this.customObjectFieldsList = (List<CustomObjectFields>) body.getOrDefault("customObjectFields", new ArrayList<CustomObjectFields>());
         this.template = (String) body.getOrDefault("template", "");
+        this.invoicesBaseUrl = (String) body.getOrDefault("invoicesBaseUrl", "");
     }
 
     @Override
@@ -236,5 +239,13 @@ public class EloquaAppItem {
 
     public void setTemplate(String template) {
         this.template = template;
+    }
+
+    public String getInvoicesBaseUrl() {
+        return invoicesBaseUrl;
+    }
+
+    public void setInvoicesBaseUrl(String invoicesBaseUrl) {
+        this.invoicesBaseUrl = invoicesBaseUrl;
     }
 }
