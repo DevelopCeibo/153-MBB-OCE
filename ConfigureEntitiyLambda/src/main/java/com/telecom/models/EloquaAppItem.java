@@ -1,8 +1,12 @@
 package com.telecom.models;
 
+import com.telecom.utils.CustomObjectFieldsListConverter;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbConvertedBy;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @DynamoDbBean
@@ -22,12 +26,37 @@ public class EloquaAppItem {
     private String oauthVersion;
     private String oauthSignature;
     private String state;
+    private String customObjectId;
+    private List<CustomObjectFields> customObjectFieldsList;
+    private String template;
+    private String invoicesBaseUrl;
 
     // Constructores
 
     public EloquaAppItem() {}
 
-    public EloquaAppItem(Map<String, String> queryParams) {
+    public EloquaAppItem(Map<String, Object> queryParams) {
+        this.instanceId = (String) queryParams.getOrDefault("instance_id", "");
+        this.installId = (String) queryParams.getOrDefault("install_id", "");
+        this.userName = (String) queryParams.getOrDefault("user_name", "");
+        this.userId = (String) queryParams.getOrDefault("user_id", "");
+        this.siteName = (String) queryParams.getOrDefault("site_name", "");
+        this.siteId = (String) queryParams.getOrDefault("site_id", "");
+        this.appId = (String) queryParams.getOrDefault("app_id", "");
+        this.oauthConsumerKey = (String) queryParams.getOrDefault("oauth_consumer_key", "");
+        this.oauthNonce = (String) queryParams.getOrDefault("oauth_nonce", "");
+        this.oauthSignatureMethod = (String) queryParams.getOrDefault("oauth_signature_method", "");
+        this.oauthTimestamp = (String) queryParams.getOrDefault("oauth_timestamp", "");
+        this.oauthVersion = (String) queryParams.getOrDefault("oauth_version", "");
+        this.oauthSignature = (String) queryParams.getOrDefault("oauth_signature", "");
+        this.state = (String) queryParams.getOrDefault("state", "configurated");
+        this.customObjectId = (String) queryParams.getOrDefault("customObjectId", "186");
+        this.customObjectFieldsList = (List<CustomObjectFields>) queryParams.getOrDefault("customObjectFields", new ArrayList<CustomObjectFields>());
+        this.template = (String) queryParams.getOrDefault("template", "");
+        this.invoicesBaseUrl = (String) queryParams.getOrDefault("invoicesBaseUrl", "");
+    }
+
+    public EloquaAppItem(Map<String, String> queryParams, Map<String, Object> body) {
         this.instanceId = queryParams.getOrDefault("instance_id", "");
         this.installId = queryParams.getOrDefault("install_id", "");
         this.userName = queryParams.getOrDefault("user_name", "");
@@ -42,6 +71,11 @@ public class EloquaAppItem {
         this.oauthVersion = queryParams.getOrDefault("oauth_version", "");
         this.oauthSignature = queryParams.getOrDefault("oauth_signature", "");
         this.state = queryParams.getOrDefault("state", "created");
+
+        this.customObjectId = (String) body.getOrDefault("customObjectId", "186");
+        this.customObjectFieldsList = (List<CustomObjectFields>) body.getOrDefault("customObjectFields", new ArrayList<CustomObjectFields>());
+        this.template = (String) body.getOrDefault("template", "");
+        this.invoicesBaseUrl = (String) body.getOrDefault("invoicesBaseUrl", "");
     }
 
     @Override
@@ -61,6 +95,9 @@ public class EloquaAppItem {
                 ", oauthVersion='" + oauthVersion + '\'' +
                 ", oauthSignature='" + oauthSignature + '\'' +
                 ", state='" + state + '\'' +
+                ", customObjectId='" + customObjectId + '\'' +
+                ", customObjectFieldsList=" + customObjectFieldsList +
+                ", template='" + template + '\'' +
                 '}';
     }
 
@@ -177,5 +214,38 @@ public class EloquaAppItem {
 
     public void setState(String state) {
         this.state = state;
+    }
+
+    public String getCustomObjectId() {
+        return customObjectId;
+    }
+
+    public void setCustomObjectId(String customObjectId) {
+        this.customObjectId = customObjectId;
+    }
+
+    @DynamoDbConvertedBy(CustomObjectFieldsListConverter.class)
+    public List<CustomObjectFields> getCustomObjectFieldsList() {
+        return customObjectFieldsList;
+    }
+
+    public void setCustomObjectFieldsList(List<CustomObjectFields> customObjectFieldsList) {
+        this.customObjectFieldsList = customObjectFieldsList;
+    }
+
+    public String getTemplate() {
+        return template;
+    }
+
+    public void setTemplate(String template) {
+        this.template = template;
+    }
+
+    public String getInvoicesBaseUrl() {
+        return invoicesBaseUrl;
+    }
+
+    public void setInvoicesBaseUrl(String invoicesBaseUrl) {
+        this.invoicesBaseUrl = invoicesBaseUrl;
     }
 }
