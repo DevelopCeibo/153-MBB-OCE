@@ -4,7 +4,11 @@ import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.telecom.models.CustomObjectFields;
 import com.telecom.models.NotificationEntity;
+import com.telecom.models.TemplateItem;
+import com.telecom.repository.EloquaAppRepository;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -12,6 +16,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -21,8 +26,11 @@ public class NotificationEntityService {
     private final LambdaLogger logger;
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    public NotificationEntityService(LambdaLogger logger) {
+    private final EloquaAppRepository eloquaAppRepository;
+
+    public NotificationEntityService(LambdaLogger logger, DynamoDbClient dynamoDbClient) {
         this.logger = logger;
+        this.eloquaAppRepository = new EloquaAppRepository(dynamoDbClient);
     }
 
     public NotificationEntity createNotificationEntity(Map<String, Object> data) {
@@ -32,8 +40,12 @@ public class NotificationEntityService {
 
     public void processEloquaRequest(NotificationEntity notificationEntity) {
         Map<String, Object> data = notificationEntity.getData();
-        String instanceId = ((String) ((Map<String, Object>) data.get("queryStrings")).get("instance_id")).replace("-", "");
+        String instanceId = (String) ((Map<String, Object>) data.get("queryStrings")).get("instance_id");
+        String parseIntanceId = instanceId.replace("-", "");
         String executionId = (String) ((Map<String, Object>) data.get("queryStrings")).get("execution_id");
+
+        TemplateItem templateItem = eloquaAppRepository.getTemplate(instanceId);
+
         String postBody = String.format("""
                 {
                     "name": "Content Response Bulk Import",
@@ -44,7 +56,7 @@ public class NotificationEntityService {
                     },
                     "identifierFieldName": "EmailAddress"
                 }
-                """, instanceId, executionId);
+                """, parseIntanceId, executionId);
 
         String url = "https://secure.p04.eloqua.com/api/bulk/2.0/contacts/imports";
 
@@ -52,7 +64,7 @@ public class NotificationEntityService {
             String responseBody = makeHttpRequest(url, "POST", postBody);
             String importUri = extractUriFromResponse(responseBody);
             logger.log("importUri: " +importUri);
-            String postDataBody = createPostDataBody(notificationEntity);
+            String postDataBody = createPostDataBody(notificationEntity, templateItem);
             logger.log("postDataBody: " + postDataBody);
             postToEloqua(importUri, postDataBody);
             syncImport(importUri);
@@ -118,20 +130,25 @@ public class NotificationEntityService {
         }
     }
 
-    private String createPostDataBody(NotificationEntity notificationEntity) {
+    /*
+    private String createPostDataBody(NotificationEntity notificationEntity, TemplateItem templateItem) {
 
             logger.log("createPostDataBody: " + notificationEntity.toString());
             Map<String, Object> body = (Map<String, Object>) notificationEntity.getData().get("body");
             logger.log("body: " + body);
             List<Map<String, Object>> items = (List<Map<String, Object>>) body.get("items");
             logger.log("items: " + items);
+            String template = templateItem.getTemplate(); // template = "<tr><td>%s</td><td>%s</td><td>%s</td></tr>"
+            List<CustomObjectFields> fields = templateItem.getCustomObjectFieldsList();
+            int fieldsLength = fields.size();
+            String customObjectID = templateItem.getCustomObjectId();
 
 
             StringBuilder dataBuilder = new StringBuilder("[");
 
             for (Map<String, Object> item : items) {
                 String contactId = (String) item.get("ContactID");
-                String url = String.format("https://secure.p04.eloqua.com/api/rest/2.0/data/customObject/186/instances?search=contactId='%s'", contactId);
+                String url = String.format("https://secure.p04.eloqua.com/api/rest/2.0/data/customObject/%s/instances?search=contactId='%s'", customObjectID ,contactId);
 
                 try {
                     String responseBody = makeHttpRequest(url, "GET", null);
@@ -145,7 +162,7 @@ public class NotificationEntityService {
                             String email = element.get("fieldValues").get(0).get("value").asText();
                             String contrato = element.get("fieldValues").get(1).get("value").asText();
                             String link = element.get("fieldValues").get(2).get("value").asText();
-                            contentBuilder.append(String.format("<tr><td>%s</td><td>%s</td><td>%s</td></tr>", contrato, email, link));
+                            contentBuilder.append(String.format(template, contrato, email, link));
                         }
                         String emailAddress = (String) item.get("EmailAddress");
                         dataBuilder.append(String.format("""
@@ -165,6 +182,79 @@ public class NotificationEntityService {
         dataBuilder.append("]");
         return dataBuilder.toString();
     }
+    */
+    private String createPostDataBody(NotificationEntity notificationEntity, TemplateItem templateItem) {
+        logger.log("createPostDataBody: " + notificationEntity.toString());
+        Map<String, Object> body = (Map<String, Object>) notificationEntity.getData().get("body");
+        logger.log("body: " + body);
+        List<Map<String, Object>> items = (List<Map<String, Object>>) body.get("items");
+        logger.log("items: " + items);
+        String template = templateItem.getTemplate(); // Ejemplo: "<tr><td>%s</td><td>%s</td><td>%s</td></tr>"
+        List<CustomObjectFields> fields = templateItem.getCustomObjectFieldsList(); // Lista de campos con ID y name
+        String customObjectID = templateItem.getCustomObjectId();
+
+        StringBuilder dataBuilder = new StringBuilder("[");
+
+        for (Map<String, Object> item : items) {
+            String contactId = (String) item.get("ContactID");
+            String url = String.format("https://secure.p04.eloqua.com/api/rest/2.0/data/customObject/%s/instances?search=contactId='%s'", customObjectID, contactId);
+
+            try {
+                String responseBody = makeHttpRequest(url, "GET", null);
+                ObjectMapper objectMapper = new ObjectMapper();
+                JsonNode rootNode = objectMapper.readTree(responseBody);
+
+                JsonNode elements = rootNode.get("elements");
+                if (elements != null && elements.isArray()) {
+                    StringBuilder contentBuilder = new StringBuilder();
+
+                    for (JsonNode element : elements) {
+                        JsonNode fieldValues = element.get("fieldValues");
+
+                        // Creamos un arreglo dinámico para almacenar los valores correspondientes a los campos del template
+                        List<String> fieldValueList = new ArrayList<>();
+
+                        // Para cada campo en customObjectFieldsList buscamos su valor en fieldValues
+                        for (CustomObjectFields customField : fields) {
+                            String fieldId = customField.getId();
+                            String fieldValue = "";
+
+                            // Buscamos en fieldValues el campo con el mismo ID
+                            for (JsonNode fieldValueNode : fieldValues) {
+                                if (fieldValueNode.get("id").asText().equals(fieldId)) {
+                                    fieldValue = fieldValueNode.get("value").asText(); // Obtenemos el valor correspondiente
+                                    break; // Rompemos el bucle cuando encontramos el campo con ese ID
+                                }
+                            }
+
+                            // Agregamos el valor encontrado o vacío si no existe
+                            fieldValueList.add(fieldValue);
+                        }
+
+                        // Formateamos el template utilizando los valores encontrados (puede haber cualquier número de campos)
+                        contentBuilder.append(String.format(template, fieldValueList.toArray()));
+                    }
+
+                    String emailAddress = (String) item.get("EmailAddress");
+                    dataBuilder.append(String.format("""
+                        {
+                            "EmailAddress": "%s",
+                            "Content": "%s"
+                        },
+                        """, emailAddress, contentBuilder.toString()));
+                }
+
+            } catch (Exception e) {
+                throw new RuntimeException("Error al procesar la respuesta de Eloqua", e);
+            }
+        }
+
+        dataBuilder.setLength(dataBuilder.length() - 1); // Eliminar la última coma
+        dataBuilder.append("]");
+        return dataBuilder.toString();
+    }
+
+
 
     private void postToEloqua(String importUri, String postDataBody) {
         String url = "https://secure.p04.eloqua.com/api/bulk/2.0" + importUri + "/data";

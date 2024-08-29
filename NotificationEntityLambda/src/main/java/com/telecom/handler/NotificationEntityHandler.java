@@ -5,8 +5,10 @@ import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.SQSEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.telecom.config.DynamoDbConfig;
 import com.telecom.models.NotificationEntity;
 import com.telecom.services.NotificationEntityService;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
 import java.util.Map;
 
@@ -18,8 +20,11 @@ public class NotificationEntityHandler implements RequestHandler<SQSEvent, Void>
     public Void handleRequest(SQSEvent sqsEvent, Context context) {
 
         LambdaLogger logger = context.getLogger();
+        DynamoDbClient dynamoDbClient = DynamoDbConfig.dynamoDbClient();
 
-        NotificationEntityService notificationEntityService = new NotificationEntityService(logger);
+        NotificationEntityService notificationEntityService = new NotificationEntityService(logger,dynamoDbClient);
+
+
 
         // Recorrer los mensajes recibidos en el evento de SQS
         for (SQSEvent.SQSMessage message : sqsEvent.getRecords()) {
