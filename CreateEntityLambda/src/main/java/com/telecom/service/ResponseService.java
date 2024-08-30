@@ -14,7 +14,7 @@ public class ResponseService {
     public APIGatewayProxyResponseEvent createEloquaResponse() {
         // Crear el objeto de respuesta
         Response response = new Response();
-        response.setRecordDefinition(new RecordDefinitions("{{Contact.Id}}", "{{Contact.Field(C_EmailAddress)}}"));
+        response.setRecordDefinition(new RecordDefinitions("{{Contact.Id}}", "{{Contact.Field(C_EmailAddress)}}", "{{Contact.Field(C_NUMERO_IDENTIFICACION_CLIENTE1)}}"));
         response.setHeight(256);
         response.setWidth(256);
         response.setEditorImageUrl("https://img04.en25.com/EloquaImages/clients/IngramMicroLATAM/%7B5f315c7b-a380-47af-95aa-140b9a43bd21%7D_32x32.png");

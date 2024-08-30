@@ -9,9 +9,13 @@ public class RecordDefinition {
     @JsonProperty("EmailAddress")
     private String emailAddress;
 
-    public RecordDefinition(String contactID, String emailAddress) {
+    @JsonProperty("NUMERO_IDENTIFICACION_CLIENTE")
+    private String numeroIdentificacionCliente;
+
+    public RecordDefinition(String contactID, String emailAddress, String numeroIdentificacionCliente) {
         this.contactID = contactID;
         this.emailAddress = emailAddress;
+        this.numeroIdentificacionCliente = numeroIdentificacionCliente;
     }
 
     public String getContactID() {
@@ -28,5 +32,13 @@ public class RecordDefinition {
 
     public void setEmailAddress(String emailAddress) {
         this.emailAddress = emailAddress;
+    }
+
+    public String getNumeroIdentificacionCliente() {
+        return numeroIdentificacionCliente;
+    }
+
+    public void setNumeroIdentificacionCliente(String numeroIdentificacionCliente) {
+        this.numeroIdentificacionCliente = numeroIdentificacionCliente;
     }
 }
