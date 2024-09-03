@@ -30,6 +30,7 @@ public class EloquaAppItem {
     private List<CustomObjectFields> customObjectFieldsList;
     private String template;
     private String invoicesBaseUrl;
+    private String pivotField;
 
     // Constructores
 
@@ -54,6 +55,7 @@ public class EloquaAppItem {
         this.customObjectFieldsList = (List<CustomObjectFields>) queryParams.getOrDefault("customObjectFields", new ArrayList<CustomObjectFields>());
         this.template = (String) queryParams.getOrDefault("template", "");
         this.invoicesBaseUrl = (String) queryParams.getOrDefault("invoicesBaseUrl", "");
+        this.pivotField = (String) queryParams.getOrDefault("pivotField", "");
     }
 
     public EloquaAppItem(Map<String, String> queryParams, Map<String, Object> body) {
@@ -76,6 +78,7 @@ public class EloquaAppItem {
         this.customObjectFieldsList = (List<CustomObjectFields>) body.getOrDefault("customObjectFields", new ArrayList<CustomObjectFields>());
         this.template = (String) body.getOrDefault("template", "");
         this.invoicesBaseUrl = (String) body.getOrDefault("invoicesBaseUrl", "");
+        this.pivotField = (String) body.getOrDefault("pivotField", "");
     }
 
     @Override
@@ -98,6 +101,7 @@ public class EloquaAppItem {
                 ", customObjectId='" + customObjectId + '\'' +
                 ", customObjectFieldsList=" + customObjectFieldsList +
                 ", template='" + template + '\'' +
+                ", pivotField='" + pivotField + '\'' +
                 '}';
     }
 
@@ -247,5 +251,13 @@ public class EloquaAppItem {
 
     public void setInvoicesBaseUrl(String invoicesBaseUrl) {
         this.invoicesBaseUrl = invoicesBaseUrl;
+    }
+
+    public String getPivotField() {
+        return pivotField;
+    }
+
+    public void setPivotField(String pivotField) {
+        this.pivotField = pivotField;
     }
 }

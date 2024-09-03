@@ -31,6 +31,7 @@ public class EloquaAppRepository {
         template.setCustomObjectFieldsList(eloquaAppItem.getCustomObjectFieldsList());
         template.setCustomObjectId(eloquaAppItem.getCustomObjectId());
         template.setInvoicesBaseUrl(eloquaAppItem.getInvoicesBaseUrl());
+        template.setPivotField(eloquaAppItem.getPivotField());
         return template;
     }
 }

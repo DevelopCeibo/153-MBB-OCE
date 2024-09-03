@@ -37,8 +37,9 @@ public class ConfigureEntityHandler implements RequestHandler<APIGatewayProxyReq
         LambdaLogger logger = context.getLogger();
         Map<String, Object> body;
 
-        String contactID = "{{Contact.Id}}"; // Solo ejemplos
-        String emailAddress = "{{Contact.Field(C_EmailAddress)}}"; // Solo ejemplos
+        String contactID = "{{Contact.Id}}";
+        String emailAddress = "{{Contact.Field(C_EmailAddress)}}";
+        String numeroIdentifiacionCliente = "{{Contact.Field(C_NUMERO_IDENTIFICACION_CLIENTE1)}}";
 
 
         Map<String, String> queryParams = apiGatewayProxyRequestEvent.getQueryStringParameters();
@@ -68,6 +69,7 @@ public class ConfigureEntityHandler implements RequestHandler<APIGatewayProxyReq
             eloquaAppItem.setTemplate((String) body.get("template"));
             eloquaAppItem.setInvoicesBaseUrl((String) body.get("invoicesBaseUrl"));
             eloquaAppItem.setState("updated");
+            eloquaAppItem.setPivotField((String) body.get("pivotField"));
 
             eloquaAppService.updateItem(eloquaAppItem);
 
@@ -92,7 +94,7 @@ public class ConfigureEntityHandler implements RequestHandler<APIGatewayProxyReq
         String url = "https://secure.p04.eloqua.com/api/cloud/1.0/contents/instances/" + instance_id;
 
         // Crear el objeto RecordDefinitions con los datos necesarios
-       var putResponse = putRequestService.buildPutRequestBody(contactID, emailAddress);
+       var putResponse = putRequestService.buildPutRequestBody(contactID, emailAddress, numeroIdentifiacionCliente);
 
         try {
             // Enviar la solicitud PUT

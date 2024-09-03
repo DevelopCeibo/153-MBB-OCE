@@ -130,59 +130,6 @@ public class NotificationEntityService {
         }
     }
 
-    /*
-    private String createPostDataBody(NotificationEntity notificationEntity, TemplateItem templateItem) {
-
-            logger.log("createPostDataBody: " + notificationEntity.toString());
-            Map<String, Object> body = (Map<String, Object>) notificationEntity.getData().get("body");
-            logger.log("body: " + body);
-            List<Map<String, Object>> items = (List<Map<String, Object>>) body.get("items");
-            logger.log("items: " + items);
-            String template = templateItem.getTemplate(); // template = "<tr><td>%s</td><td>%s</td><td>%s</td></tr>"
-            List<CustomObjectFields> fields = templateItem.getCustomObjectFieldsList();
-            int fieldsLength = fields.size();
-            String customObjectID = templateItem.getCustomObjectId();
-
-
-            StringBuilder dataBuilder = new StringBuilder("[");
-
-            for (Map<String, Object> item : items) {
-                String contactId = (String) item.get("ContactID");
-                String url = String.format("https://secure.p04.eloqua.com/api/rest/2.0/data/customObject/%s/instances?search=contactId='%s'", customObjectID ,contactId);
-
-                try {
-                    String responseBody = makeHttpRequest(url, "GET", null);
-                    ObjectMapper objectMapper = new ObjectMapper();
-                    JsonNode rootNode = objectMapper.readTree(responseBody);
-
-                    JsonNode elements = rootNode.get("elements");
-                    if (elements != null && elements.isArray()) {
-                        StringBuilder contentBuilder = new StringBuilder();
-                        for (JsonNode element : elements) {
-                            String email = element.get("fieldValues").get(0).get("value").asText();
-                            String contrato = element.get("fieldValues").get(1).get("value").asText();
-                            String link = element.get("fieldValues").get(2).get("value").asText();
-                            contentBuilder.append(String.format(template, contrato, email, link));
-                        }
-                        String emailAddress = (String) item.get("EmailAddress");
-                        dataBuilder.append(String.format("""
-                                {
-                                    "EmailAddress": "%s",
-                                    "Content": "%s"
-                                },
-                                """, emailAddress, contentBuilder.toString()));
-                    }
-
-                } catch (Exception e) {
-                    throw new RuntimeException("Error al procesar la respuesta de Eloqua", e);
-                }
-            }
-
-        dataBuilder.setLength(dataBuilder.length() - 1);
-        dataBuilder.append("]");
-        return dataBuilder.toString();
-    }
-    */
     private String createPostDataBody(NotificationEntity notificationEntity, TemplateItem templateItem) {
         logger.log("createPostDataBody: " + notificationEntity.toString());
         Map<String, Object> body = (Map<String, Object>) notificationEntity.getData().get("body");
@@ -192,13 +139,22 @@ public class NotificationEntityService {
         String template = templateItem.getTemplate(); // Ejemplo: "<tr><td>%s</td><td>%s</td><td>%s</td></tr>"
         List<CustomObjectFields> fields = templateItem.getCustomObjectFieldsList(); // Lista de campos con ID y name
         String customObjectID = templateItem.getCustomObjectId();
+        String pivotField = templateItem.getPivotField();
+        logger.log("templateItem: " + templateItem);
+        logger.log("pivotField: " + pivotField);
+        String url;
 
         StringBuilder dataBuilder = new StringBuilder("[");
 
         for (Map<String, Object> item : items) {
-            String contactId = (String) item.get("ContactID");
-            String url = String.format("https://secure.p04.eloqua.com/api/rest/2.0/data/customObject/%s/instances?search=contactId='%s'", customObjectID, contactId);
 
+            if(pivotField.equals("contactId")) {
+                String contactId = (String) item.get("ContactID");
+                url = String.format("https://secure.p04.eloqua.com/api/rest/2.0/data/customObject/%s/instances?search=contactId='%s'", customObjectID, contactId);
+            }else{
+                String name = (String) item.get("NUMERO_IDENTIFICACION_CLIENTE");
+                url = String.format("https://secure.p04.eloqua.com/api/rest/2.0/data/customObject/%s/instances?search=name='%s'", customObjectID, name);
+            }
             try {
                 String responseBody = makeHttpRequest(url, "GET", null);
                 ObjectMapper objectMapper = new ObjectMapper();

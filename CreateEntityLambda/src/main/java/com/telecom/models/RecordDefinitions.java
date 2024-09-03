@@ -9,9 +9,13 @@ public class RecordDefinitions {
     @JsonProperty("EmailAddress")
     private String emailAddress;
 
-    public RecordDefinitions(String contactID, String emailAddress) {
+    @JsonProperty("NUMERO_IDENTIFICACION_CLIENTE")
+    private String numeroIdentificacionCliente;
+
+    public RecordDefinitions(String contactID, String emailAddress, String numeroIdentificacionCliente) {
         this.contactID = contactID;
         this.emailAddress = emailAddress;
+        this.numeroIdentificacionCliente = numeroIdentificacionCliente;
     }
 
     public String getContactID() {

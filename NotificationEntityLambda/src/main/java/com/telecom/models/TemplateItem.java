@@ -10,6 +10,7 @@ public class TemplateItem {
     private List<CustomObjectFields> customObjectFieldsList;
     private String template;
     private String invoicesBaseUrl;
+    private String pivotField;
 
     // Constructores
 
@@ -20,18 +21,19 @@ public class TemplateItem {
         this.customObjectFieldsList = (List<CustomObjectFields>) template.getOrDefault("customObjectFields", new ArrayList<CustomObjectFields>());
         this.template = (String) template.getOrDefault("template", "");
         this.invoicesBaseUrl = (String) template.getOrDefault("invoicesBaseUrl", "");
+        this.pivotField = (String) template.getOrDefault("pivotField", "contactId");
     }
 
     @Override
     public String toString() {
-        return "{" +
+        return "TemplateItem{" +
                 "customObjectId='" + customObjectId + '\'' +
                 ", customObjectFieldsList=" + customObjectFieldsList +
                 ", template='" + template + '\'' +
                 ", invoicesBaseUrl='" + invoicesBaseUrl + '\'' +
+                ", pivotField='" + pivotField + '\'' +
                 '}';
     }
-
 
     // Getters y Setters...
 
@@ -66,6 +68,14 @@ public class TemplateItem {
 
     public void setInvoicesBaseUrl(String invoicesBaseUrl) {
         this.invoicesBaseUrl = invoicesBaseUrl;
+    }
+
+    public String getPivotField() {
+        return pivotField;
+    }
+
+    public void setPivotField(String pivotField) {
+        this.pivotField = pivotField;
     }
 }
 

@@ -5,9 +5,9 @@ import com.telecom.models.RecordDefinition;
 
 public class PutRequestService {
 
-    public PutResponse buildPutRequestBody(String contactID, String emailAddress) {
+    public PutResponse buildPutRequestBody(String contactID, String emailAddress, String numeroIdentificacionCliente) {
         // Crear la instancia de RecordDefinitions
-        RecordDefinition recordDefinition = new RecordDefinition(contactID, emailAddress);
+        RecordDefinition recordDefinition = new RecordDefinition(contactID, emailAddress, numeroIdentificacionCliente);
 
         // Crear la instancia de PutResponse
         PutResponse putResponse = new PutResponse();
