@@ -67,7 +67,6 @@ public class ConfigureEntityHandler implements RequestHandler<APIGatewayProxyReq
             List<CustomObjectFields> customObjectFields = objectMapper.readValue(customObjectFieldsStrings, List.class);
             eloquaAppItem.setCustomObjectFieldsList( customObjectFields);  //customObjectFields
             eloquaAppItem.setTemplate((String) body.get("template"));
-            eloquaAppItem.setInvoicesBaseUrl((String) body.get("invoicesBaseUrl"));
             eloquaAppItem.setState("updated");
             eloquaAppItem.setPivotField((String) body.get("pivotField"));
 
