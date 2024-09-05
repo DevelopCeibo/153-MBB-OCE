@@ -57,6 +57,29 @@
       margin-bottom: 20px;
     }
 
+    #invoicesBaseUrlForm {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    #invoicesBaseUrlForm>label {
+      color: #AAAAAA;
+    }
+
+    #invoicesBaseUrlForm>input[type="text"] {
+      flex-grow: 1;
+    }
+
+    #invoicesBaseUrlForm>input[type="text"]:disabled {
+      color: gray !important;
+      box-shadow: none;
+    }
+
+    input.disabled {
+      color: gray !important;
+    }
+
     #customObjectForm {
       display: flex;
       align-items: center;
@@ -183,6 +206,7 @@
       margin: 0 auto;
     }
 
+    #invoicesBaseUrlCheckbox,
     .checkbox-wrapper input[type=checkbox] {
       -webkit-appearance: none;
       appearance: none;
@@ -197,6 +221,8 @@
       position: relative;
     }
 
+    #invoicesBaseUrlCheckbox:before,
+    #invoicesBaseUrlCheckbox:after,
     .checkbox-wrapper input[type=checkbox]:before,
     .checkbox-wrapper input[type=checkbox]:after {
       content: "";
@@ -209,11 +235,13 @@
       transform-origin: left center;
     }
 
+    #invoicesBaseUrlCheckbox:before,
     .checkbox-wrapper input[type=checkbox]:before {
       transform: rotate(45deg) translate(calc(var(--borderWidth) / -2), calc(var(--borderWidth) / -2)) scaleX(0);
       transition: transform 200ms ease-in 200ms;
     }
 
+    #invoicesBaseUrlCheckbox:after,
     .checkbox-wrapper input[type=checkbox]:after {
       width: calc(var(--borderWidth) * 5);
       transform: rotate(-45deg) translateY(calc(var(--borderWidth) * 2)) scaleX(0);
@@ -221,17 +249,20 @@
       transition: transform 200ms ease-in;
     }
 
+    #invoicesBaseUrlCheckbox:checked:before,
     .checkbox-wrapper input[type=checkbox]:checked:before {
       transform: rotate(45deg) translate(calc(var(--borderWidth) / -2), calc(var(--borderWidth) / -2)) scaleX(1);
       transition: transform 200ms ease-in;
     }
 
+    #invoicesBaseUrlCheckbox:checked:after,
     .checkbox-wrapper input[type=checkbox]:checked:after {
       width: calc(var(--borderWidth) * 5);
       transform: rotate(-45deg) translateY(calc(var(--borderWidth) * 2)) scaleX(1);
       transition: transform 200ms ease-out 200ms;
     }
 
+    #invoicesBaseUrlCheckbox:focus,
     .checkbox-wrapper input[type=checkbox]:focus {
       outline: calc(var(--borderWidth) / 2) dotted rgba(0, 0, 0, 0.25);
     }
@@ -250,6 +281,13 @@
 
 <body>
   <h1>Configuración del Template HTML</h1>
+
+  <!-- Campo de entrada para invoicesBaseUrl -->
+  <div id="invoicesBaseUrlForm">
+    <input type="checkbox" id="invoicesBaseUrlCheckbox">
+    <label class="label" id="invoicesBaseUrlLabel" for="invoicesBaseUrl">URL base para facturas:</label>
+    <input class="input" type="text" id="invoicesBaseUrl" placeholder="Ingrese el invoicesBaseUrl" disabled>
+  </div>
   <!-- Campo de entrada para selección del pivotField -->
   <div id="pivotFieldSection">
     <label class="label">Seleccione el campo de pivote:</label>
@@ -281,11 +319,34 @@
     let fieldsData = [];
     let isHighlighting = false;
 
+    const invoicesBaseUrlCheckbox = document.getElementById('invoicesBaseUrlCheckbox');
+    const invoicesBaseUrlInput = document.getElementById('invoicesBaseUrl');
+    const invoicesBaseUrlLabel = document.getElementById('invoicesBaseUrlLabel');
+
+    // Agregamos el evento change al checkbox
+    invoicesBaseUrlCheckbox.addEventListener('change', function () {
+      if (this.checked) {
+        // Si el checkbox está seleccionado, habilitamos el input y cambiamos el color del label a negro
+        invoicesBaseUrlInput.disabled = false;
+        invoicesBaseUrlLabel.style.color = 'black';
+      } else {
+        // Si el checkbox no está seleccionado, deshabilitamos el input y cambiamos el color del label a gris
+        invoicesBaseUrlInput.value = '';
+        invoicesBaseUrlInput.disabled = true;
+        invoicesBaseUrlLabel.style.color = 'grey';
+      }
+    });
+
     async function fetchCustomObjectFields() {
       const customObjectId = document.getElementById('customObjectId').value;
-
+      const invoicesBaseUrl = document.getElementById('invoicesBaseUrl').value;
       if (!customObjectId) {
         alert('Por favor, ingrese un ID de Custom Object');
+        return;
+      }
+
+      if (invoicesBaseUrlCheckbox.checked && !invoicesBaseUrl) {
+        alert('Por favor, ingrese el invoicesBaseUrl');
         return;
       }
 
@@ -369,11 +430,17 @@
 
     async function updateTemplate() {
       const customObjectId = document.getElementById('customObjectId').value;
+      const invoicesBaseUrl = invoicesBaseUrlCheckbox.checked ? document.getElementById('invoicesBaseUrl').value : "";
       const htmlEditor = document.getElementById('htmlEditor');
       let template = htmlEditor.innerText;
 
       if (!customObjectId) {
         alert('Por favor, ingrese un ID de Custom Object');
+        return;
+      }
+
+      if (!invoicesBaseUrl) {
+        alert('Por favor, ingrese el invoicesBaseUrl');
         return;
       }
 
@@ -409,6 +476,7 @@
         customObjectId: customObjectId,
         customObjectFields: JSON.stringify(updatedCustomObjectFields),
         template: template,
+        invoicesBaseUrl: invoicesBaseUrl,
         pivotField: pivotField  // Aquí agregamos el nuevo campo
       });
 

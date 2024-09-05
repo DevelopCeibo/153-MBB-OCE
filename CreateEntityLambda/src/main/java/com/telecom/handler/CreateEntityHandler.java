@@ -30,21 +30,29 @@ public class CreateEntityHandler implements RequestHandler<APIGatewayProxyReques
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent apiGatewayProxyRequestEvent, Context context) {
         // Obtener el logger del contexto
         LambdaLogger logger = context.getLogger();
+        APIGatewayProxyResponseEvent response;
 
-        // Obtener los parámetros de la query
-        Map<String, String> queryParams = apiGatewayProxyRequestEvent.getQueryStringParameters();
+        try{
+            // Obtener los parámetros de la query
+            Map<String, String> queryParams = apiGatewayProxyRequestEvent.getQueryStringParameters();
 
-        // Crear el objeto EloquaAppItem usando el constructor con Map
-        EloquaAppItem eloquaAppItem = new EloquaAppItem(queryParams);
+            // Crear el objeto EloquaAppItem usando el constructor con Map
+            EloquaAppItem eloquaAppItem = new EloquaAppItem(queryParams);
 
-        // Loguear los parámetros
-        logger.log(eloquaAppItem.toString());
+            // Loguear los parámetros
+            logger.log(eloquaAppItem.toString());
 
-        // Guardar el item en DynamoDB
-        eloquaAppService.saveEloquaApp(eloquaAppItem);
+            // Guardar el item en DynamoDB
+            eloquaAppService.saveEloquaApp(eloquaAppItem);
 
-        // Crear la respuesta de API Gateway usando ResponseService
-        return responseService.createEloquaResponse();
+            // Crear la respuesta de API Gateway usando ResponseService
+            response = responseService.createEloquaResponse();
+
+        }catch (Exception e){
+            logger.log("Error procesando la solicitud: " + e.getMessage());
+            response = new APIGatewayProxyResponseEvent().withStatusCode(500).withBody("Error interno del servidor");
+        }
+    return response;
     }
 
 }

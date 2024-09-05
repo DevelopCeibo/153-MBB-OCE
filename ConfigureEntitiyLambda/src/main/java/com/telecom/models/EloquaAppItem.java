@@ -19,17 +19,10 @@ public class EloquaAppItem {
     private String siteName;
     private String siteId;
     private String appId;
-    private String oauthConsumerKey;
-    private String oauthNonce;
-    private String oauthSignatureMethod;
-    private String oauthTimestamp;
-    private String oauthVersion;
-    private String oauthSignature;
     private String state;
     private String customObjectId;
     private List<CustomObjectFields> customObjectFieldsList;
     private String template;
-    private String invoicesBaseUrl;
     private String pivotField;
 
     // Constructores
@@ -44,17 +37,10 @@ public class EloquaAppItem {
         this.siteName = (String) queryParams.getOrDefault("site_name", "");
         this.siteId = (String) queryParams.getOrDefault("site_id", "");
         this.appId = (String) queryParams.getOrDefault("app_id", "");
-        this.oauthConsumerKey = (String) queryParams.getOrDefault("oauth_consumer_key", "");
-        this.oauthNonce = (String) queryParams.getOrDefault("oauth_nonce", "");
-        this.oauthSignatureMethod = (String) queryParams.getOrDefault("oauth_signature_method", "");
-        this.oauthTimestamp = (String) queryParams.getOrDefault("oauth_timestamp", "");
-        this.oauthVersion = (String) queryParams.getOrDefault("oauth_version", "");
-        this.oauthSignature = (String) queryParams.getOrDefault("oauth_signature", "");
         this.state = (String) queryParams.getOrDefault("state", "configurated");
         this.customObjectId = (String) queryParams.getOrDefault("customObjectId", "186");
         this.customObjectFieldsList = (List<CustomObjectFields>) queryParams.getOrDefault("customObjectFields", new ArrayList<CustomObjectFields>());
         this.template = (String) queryParams.getOrDefault("template", "");
-        this.invoicesBaseUrl = (String) queryParams.getOrDefault("invoicesBaseUrl", "");
         this.pivotField = (String) queryParams.getOrDefault("pivotField", "");
     }
 
@@ -66,18 +52,11 @@ public class EloquaAppItem {
         this.siteName = queryParams.getOrDefault("site_name", "");
         this.siteId = queryParams.getOrDefault("site_id", "");
         this.appId = queryParams.getOrDefault("app_id", "");
-        this.oauthConsumerKey = queryParams.getOrDefault("oauth_consumer_key", "");
-        this.oauthNonce = queryParams.getOrDefault("oauth_nonce", "");
-        this.oauthSignatureMethod = queryParams.getOrDefault("oauth_signature_method", "");
-        this.oauthTimestamp = queryParams.getOrDefault("oauth_timestamp", "");
-        this.oauthVersion = queryParams.getOrDefault("oauth_version", "");
-        this.oauthSignature = queryParams.getOrDefault("oauth_signature", "");
-        this.state = queryParams.getOrDefault("state", "created");
 
+        this.state = queryParams.getOrDefault("state", "created");
         this.customObjectId = (String) body.getOrDefault("customObjectId", "186");
         this.customObjectFieldsList = (List<CustomObjectFields>) body.getOrDefault("customObjectFields", new ArrayList<CustomObjectFields>());
         this.template = (String) body.getOrDefault("template", "");
-        this.invoicesBaseUrl = (String) body.getOrDefault("invoicesBaseUrl", "");
         this.pivotField = (String) body.getOrDefault("pivotField", "");
     }
 
@@ -91,12 +70,6 @@ public class EloquaAppItem {
                 ", siteName='" + siteName + '\'' +
                 ", siteId='" + siteId + '\'' +
                 ", appId='" + appId + '\'' +
-                ", oauthConsumerKey='" + oauthConsumerKey + '\'' +
-                ", oauthNonce='" + oauthNonce + '\'' +
-                ", oauthSignatureMethod='" + oauthSignatureMethod + '\'' +
-                ", oauthTimestamp='" + oauthTimestamp + '\'' +
-                ", oauthVersion='" + oauthVersion + '\'' +
-                ", oauthSignature='" + oauthSignature + '\'' +
                 ", state='" + state + '\'' +
                 ", customObjectId='" + customObjectId + '\'' +
                 ", customObjectFieldsList=" + customObjectFieldsList +
@@ -164,54 +137,6 @@ public class EloquaAppItem {
         this.appId = appId;
     }
 
-    public String getOauthConsumerKey() {
-        return oauthConsumerKey;
-    }
-
-    public void setOauthConsumerKey(String oauthConsumerKey) {
-        this.oauthConsumerKey = oauthConsumerKey;
-    }
-
-    public String getOauthNonce() {
-        return oauthNonce;
-    }
-
-    public void setOauthNonce(String oauthNonce) {
-        this.oauthNonce = oauthNonce;
-    }
-
-    public String getOauthSignatureMethod() {
-        return oauthSignatureMethod;
-    }
-
-    public void setOauthSignatureMethod(String oauthSignatureMethod) {
-        this.oauthSignatureMethod = oauthSignatureMethod;
-    }
-
-    public String getOauthTimestamp() {
-        return oauthTimestamp;
-    }
-
-    public void setOauthTimestamp(String oauthTimestamp) {
-        this.oauthTimestamp = oauthTimestamp;
-    }
-
-    public String getOauthVersion() {
-        return oauthVersion;
-    }
-
-    public void setOauthVersion(String oauthVersion) {
-        this.oauthVersion = oauthVersion;
-    }
-
-    public String getOauthSignature() {
-        return oauthSignature;
-    }
-
-    public void setOauthSignature(String oauthSignature) {
-        this.oauthSignature = oauthSignature;
-    }
-
     public String getState() {
         return state;
     }
@@ -243,14 +168,6 @@ public class EloquaAppItem {
 
     public void setTemplate(String template) {
         this.template = template;
-    }
-
-    public String getInvoicesBaseUrl() {
-        return invoicesBaseUrl;
-    }
-
-    public void setInvoicesBaseUrl(String invoicesBaseUrl) {
-        this.invoicesBaseUrl = invoicesBaseUrl;
     }
 
     public String getPivotField() {
