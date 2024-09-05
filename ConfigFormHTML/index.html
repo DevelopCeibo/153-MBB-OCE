@@ -492,6 +492,7 @@
       const asset_id = params.get('asset_id') || "";
       const asset_type = params.get('asset_type') || "";
       const asset_name = params.get('asset_name') || "";
+      const oauth_consumer_key = params.get('oauth_consumer_key') || "";
 
       const urlFetch = "https://p3tg75utdi.execute-api.us-east-1.amazonaws.com/configure_entities"
         + "?instance_id=" + instance_id
@@ -503,7 +504,8 @@
         + "&app_id=" + app_id
         + "&asset_id=" + asset_id
         + "&asset_type=" + asset_type
-        + "&asset_name=" + asset_name;
+        + "&asset_name=" + asset_name
+        + "&oauth_consumer_key=" + oauth_consumer_key;
 
       //console.log('jsonData:', jsonData);
 
