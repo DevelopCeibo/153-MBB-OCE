@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Configuración del Template HTML</title>
+  <title>Configuración del Template HTML vterraform</title>
   <style>
     :root {
       --borderWidth: 3px;
@@ -290,7 +290,7 @@
       }
 
       try {
-        const response = await fetch(`https://p3tg75utdi.execute-api.us-east-1.amazonaws.com/custom_object_fields?id=${customObjectId}`);
+        const response = await fetch(`https://jx61nkar0h.execute-api.us-east-1.amazonaws.com/dev/custom_object_fields?id=${customObjectId}`);
         const data = await response.json();
         fieldsData = data.fields;
         displayFields(fieldsData);
@@ -426,7 +426,7 @@
       const asset_name = params.get('asset_name') || "";
       const oauth_consumer_key = params.get('oauth_consumer_key') || "";
 
-      const urlFetch = "https://p3tg75utdi.execute-api.us-east-1.amazonaws.com/configure_entities"
+      const urlFetch = "https://jx61nkar0h.execute-api.us-east-1.amazonaws.com/dev/configure"
         + "?instance_id=" + instance_id
         + "&install_id=" + install_id
         + "&user_name=" + user_name

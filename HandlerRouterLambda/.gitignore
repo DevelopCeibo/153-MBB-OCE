@@ -36,3 +36,37 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+# Terraform files
+*.tfstate
+*.tfstate.*
+
+# Terraform crash logs
+crash.log
+
+# Terraform variables files (contienen datos sensibles como claves)
+*.tfvars
+*.tfvars.json
+
+# Plan output (puede contener información sensible)
+*.tfplan
+
+# Backup files generados por terraform
+*.backup
+
+# Carpetas de configuración local de terraform
+**/.terraform/
+**/.terraform.lock.hcl
+
+# Archivos de ejecución locales
+terraform.tfvars
+
+# Ignorar archivos de terraform en cualquier carpeta
+**/terraform/.terraform/
+**/terraform/.terraform.lock.hcl
+**/terraform/*.tfstate
+**/terraform/*.tfstate.*
+**/terraform/*.tfvars
+**/terraform/*.tfvars.json
+**/terraform/*.tfplan
+**/terraform/*.backup

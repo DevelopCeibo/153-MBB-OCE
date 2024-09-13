@@ -149,11 +149,11 @@ public class NotificationEntityService {
         for (Map<String, Object> item : items) {
 
             if(pivotField.equals("contactId")) {
-                String contactId = (String) item.get("ContactID");
-                url = String.format("https://secure.p04.eloqua.com/api/rest/2.0/data/customObject/%s/instances?search=contactId='%s'", customObjectID, contactId);
+                String email = (String) item.get("EmailAddress");
+                url = String.format("https://secure.p04.eloqua.com/api/rest/2.0/data/customObject/%s/instances?search='Email1=%s'", customObjectID, email);
             }else{
-                String name = (String) item.get("NUMERO_IDENTIFICACION_CLIENTE");
-                url = String.format("https://secure.p04.eloqua.com/api/rest/2.0/data/customObject/%s/instances?search=name='%s'", customObjectID, name);
+                String numeroIdentificacionCliente = (String) item.get("NUMERO_IDENTIFICACION_CLIENTE");
+                url = String.format("https://secure.p04.eloqua.com/api/rest/2.0/data/customObject/%s/instances?search='NUMERO_IDENTIFICACION_CLIENTE1=%s'", customObjectID, numeroIdentificacionCliente);
             }
             try {
                 String responseBody = makeHttpRequest(url, "GET", null);
